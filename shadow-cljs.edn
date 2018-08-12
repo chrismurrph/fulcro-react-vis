@@ -9,8 +9,6 @@
                                             :http-resource-root "resources/public"
                                             ; Using the figwheel port!
                                             :http-port          3449
-                                            ;No need as done from index.html
-                                            ;:after-load app.frontend/start
                                             :preloads [devtools.preload
                                                        fulcro.inspect.preload
                                                        general.user]}}}}

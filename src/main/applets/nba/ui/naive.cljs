@@ -7,7 +7,6 @@
     [applets.nba.vis :as vis]
     [fulcro.client.dom :as dom]
     [general.dev :as dev]
-    [applets.nba.operations :as ops]
     [general.stopwatch :as sw]))
 
 (defsc NaiveChart [this {:keys [player-years desired-labels]}]

@@ -10,6 +10,5 @@
                                            (filter :ui/desired?)
                                            (map :player-year-id)
                                            (mapv (fn [id] [:player-year/by-id id])))]
-            (swap! state #(-> %
-                              (assoc-in [:desired-labels/by-id :singleton :items] desired-player-idents)))))
+            (swap! state assoc-in [:desired-labels/by-id :singleton :items] desired-player-idents)))
   (refresh [env] [:nba-application]))
