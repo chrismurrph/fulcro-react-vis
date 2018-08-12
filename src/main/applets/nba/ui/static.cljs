@@ -7,7 +7,6 @@
     [applets.nba.vis :as vis]
     [applets.nba.ui.interactive :as interactive]
     [fulcro.client.dom :as dom]
-    [general.dev :as dev]
     [general.stopwatch :as sw]))
 
 (defsc StaticChart [this {:keys [player-years interactive-components]}]

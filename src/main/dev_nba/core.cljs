@@ -10,5 +10,5 @@
 
 (defn ^:export init []
   (let [[start-f! app-config] (config/get-start-info!)]
-    (dev/log-on "To start with" app-config)
+    (dev/log-on "To start NBA app with" app-config)
     (start-f! app-config)))

@@ -5,7 +5,7 @@
             ))
 
 ;; Uncaught ReferenceError: require is not defined
-;; That's because it is a node.js thing. Pointless act!
+;; That's because it is a node.js thing.
 (def fs (js/require "fs"))
 
 (defn read-text [path f]

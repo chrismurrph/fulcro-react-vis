@@ -64,13 +64,13 @@
                              :games (map (fn [{:keys [x y]}] {:x x :y (+ y 20)})
                                          only-stephen-curry-games)})
 (def simplification 3)
-;;
-;; The data doesn't have a player-year so we create it now. Also the games need to be
-;; unique on their own, as they are stored in their own table.
-;; Also the simplification of the lines for stage :improved is handled here.
-;; The work for :nyt stage can be done always as :naive doesn't use those keys.
-;;
-(defn identities-and-stages-hof [desired-labels {:keys [stage]}]
+
+(defn identities-and-stages-hof
+  "The data doesn't have a player-year so we create it now. Also the games need to be
+   unique on their own, as they are stored in their own table.
+   Also the simplification of the lines for stage :improved is handled here.
+   The work for :nyt stage can be done always as :naive doesn't use those keys."
+  [desired-labels {:keys [stage]}]
   (dev/assert-warn (set? desired-labels))
   (fn [idx {:keys [pname year games max] :as player-year}]
     (dev/assert-warn (map? player-year) "Not a map:" player-year)
@@ -119,20 +119,24 @@
            }]
     (prim/merge-component! reconciler comp d)))
 
-(defn max-max [player-years]
+(defn max-max
+  "Best player-year"
+  [player-years]
   (->> player-years
        (map :max)
        (apply max)))
 
-;; If all lines start from the origin then this is pointless - just hard-code 0
-(defn min-min [player-years]
+(defn min-min
+  "Worst player-year"
+  [player-years]
   (->> player-years
        (map :min)
        (apply min)))
 
-;; Domain is the real world, range is where you want to put it, often
-;; somewhere on the the screen.
-(defn scale-hof [domain-js-array range-js-array]
+(defn scale-hof
+  "Domain is the real world, range is where you want to put it, often
+  somewhere on the the screen."
+  [domain-js-array range-js-array]
   (-> (scaleLinear)
       (.domain domain-js-array)
       (.range range-js-array)))

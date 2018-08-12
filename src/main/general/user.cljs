@@ -14,7 +14,7 @@
 ;; The returned data structure will go to the REPL
 
 ;; Should appear in browser. Can be fickle. You might want to re-start the watch process
-(dev/log-off "************************ ====> Pre-loaded ns where can dump")
+(dev/log-off "************************ Pre-loaded ns where can dump state")
 
 (defn x-1 []
   (dev/log "Testing x-1")

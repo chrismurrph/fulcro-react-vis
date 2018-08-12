@@ -31,7 +31,7 @@
     (->> data-rows
          (map util/clean-row)
          (sort-by (comp - :max))
-         ;shuffle
-         ;(take 150)
+         shuffle
+         (take 150)
          vec
          dev/pp)))
