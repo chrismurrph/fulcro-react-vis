@@ -3,7 +3,7 @@
             [applets.nba.ui.common :as common]
             [general.my-prim :as mprim]
             [fulcro.client.dom :as dom]
-            [applets.nba.viz :as viz]
+            [applets.nba.vis :as vis]
             [applets.nba.constants :as constants]
             [general.dev :as dev]
             [general.stopwatch :as sw]))
@@ -17,7 +17,7 @@
    :initial-state (fn [_] {:player-years   (prim/get-initial-state common/PlayerYears nil)
                            :desired-labels (prim/get-initial-state common/DesiredLabels nil)})
    }
-  (let [stop-w (sw/time-probe-hof "interactive render" true true)
+  (let [take-interval! (sw/take-intervals-hof ["render up to voronoi" "render of voronoi"])
         player-years-items (:items player-years)
         desired-labels-items (:items desired-labels)
         highlight-series (-> this prim/get-state :highlight-series)
@@ -30,13 +30,13 @@
         max-y (y-f constants/max-number-of-three-pointers)
         ]
     (dom/div :.absolute.full
-             (viz/xy-plot
+             (vis/xy-plot
                (clj->js (merge constants/layout
                                {:onMouseLeave (fn [_]
                                                 (prim/update-state! this assoc :highlight-series nil :highlight-tip nil))
                                 :xDomain      [0 constants/number-of-games]
                                 :yDomain      [0 (inc constants/max-number-of-three-pointers)]}))
-               (viz/label-series
+               (vis/label-series
                  (clj->js {:labelAnchorX "start"
                            :data         (clj->js desired-labels-items)
                            :style        common/font-style
@@ -44,15 +44,15 @@
                            :getX         (fn [_] constants/number-of-games)
                            :getLabel     common/format-player-year
                            }))
-               (when highlight-series (viz/line-series (clj->js {:animation "animation"
+               (when highlight-series (vis/line-series (clj->js {:animation "animation"
                                                                  :curve     ""
                                                                  :data      highlight-series
                                                                  :color     "black"})))
-               (when highlight-tip (viz/hint (clj->js {:value {:y (:y highlight-tip) :x constants/number-of-games}
+               (when highlight-tip (vis/hint (clj->js {:value {:y (:y highlight-tip) :x constants/number-of-games}
                                                        :align {:horizontal "right"}})
                                              (str (:name highlight-tip) " " (:y highlight-tip))))
-               (stop-w)                                     ;;small number
-               (viz/voronoi (clj->js {:extent  [[0 max-y]
+               (take-interval! 0)
+               (vis/voronoi (clj->js {:extent  [[0 max-y]
                                                 [width (- height (:bottom margin))]]
                                       :nodes   player-years-items
                                       ; Uncomment to see voronoi lines
@@ -65,8 +65,7 @@
                                                                                         :name (:pname p-year)})))
                                       :x       #(-> % common/->clj :x x-f)
                                       :y       #(-> % common/->clj :y y-f)}))
-               (stop-w)                                     ;;big number, hence player-years-items simplified
-               ))))
+               (take-interval! 120)))))
 
 (def interactive-components-ui (prim/factory InteractiveComponents))
 

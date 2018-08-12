@@ -4,10 +4,11 @@
     [general.my-prim :as mprim]
     [applets.nba.constants :as constants]
     [applets.nba.ui.common :as common]
-    [applets.nba.viz :as viz]
+    [applets.nba.vis :as vis]
     [fulcro.client.dom :as dom]
     [general.dev :as dev]
-    [applets.nba.operations :as ops]))
+    [applets.nba.operations :as ops]
+    [general.stopwatch :as sw]))
 
 (defsc NaiveChart [this {:keys [player-years desired-labels]}]
   {:ident              (fn [] [:chart/by-id :singleton])
@@ -20,16 +21,17 @@
    ;:componentWillMount (fn [] (common/load-data Chart (-> this prim/props :ui/small-data?) (prim/get-reconciler this)))
    ;:componentDidMount (fn [] (prim/transact! this `[(ops/fill-desired-labels)]))
    }
-  (let [chk-dup! (when (:ui/chk-dups? player-years)
+  (let [take-interval! (sw/take-intervals-hof ["render of naive"])
+        chk-dup! (when (:ui/chk-dups? player-years)
                    (dev/chk-dup-hof))
         player-years-items (:items player-years)
         desired-labels-items (:items desired-labels)
         colour-scale-f (common/colour-scale-hof player-years-items)]
     (if (and (seq player-years-items) (seq desired-labels-items))
-      (viz/xy-plot (clj->js constants/layout)
+      (vis/xy-plot (clj->js constants/layout)
                    (map (fn [{:keys [games player-year-id key max]}]
                           (when chk-dup! (chk-dup! key keys))
-                          (viz/line-series #js {:strokeWidth       1
+                          (vis/line-series #js {:strokeWidth       1
                                                 :key               key
                                                 :data              (clj->js games)
                                                 :onSeriesMouseOver #(prim/update-state! this assoc :highlight-series player-year-id)
@@ -38,7 +40,7 @@
                                                                      "black"
                                                                      (colour-scale-f max))}))
                         player-years-items)
-                   (viz/label-series #js {:data         (clj->js desired-labels-items)
+                   (vis/label-series #js {:data         (clj->js desired-labels-items)
                                           :style        common/font-style
                                           :getY         common/attainment-f
                                           :getX         (fn [_] constants/number-of-games)
@@ -47,10 +49,11 @@
                                                           (let [{:keys [pname games]} (common/->clj js-player-year)
                                                                 total (-> games last :y)]
                                                             (str pname " - " total)))})
-                   (viz/x-axis #js {:style      #js {:ticks common/font-style}
+                   (vis/x-axis #js {:style      #js {:ticks common/font-style}
                                     :tickFormat common/tick-format}))
       (do
         (dev/log "Never see loading..." player-years-items desired-labels-items)
-        (dom/div "LOADING LOADING LOADING LOADING LOADING LOADING LOADING LOADING LOADING LOADING LOADING LOADING")))))
+        (dom/div "LOADING LOADING LOADING LOADING LOADING LOADING LOADING LOADING LOADING LOADING LOADING LOADING")))
+    (take-interval! 100)))
 
 (def chart-ui (prim/factory NaiveChart))
