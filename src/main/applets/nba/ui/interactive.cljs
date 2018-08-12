@@ -56,10 +56,11 @@
                                               :nodes   player-years-items
                                               :onHover (fn [js]
                                                          (let [p-year (common/->clj js)]
-                                                           (debounced-upd-state this
-                                                                                :highlight-series (:games p-year)
-                                                                                :highlight-tip {:y    (:max p-year)
-                                                                                                :name (:pname p-year)})))
+                                                           (when (-> p-year :pname seq)
+                                                             (debounced-upd-state this
+                                                                                  :highlight-series (:games p-year)
+                                                                                  :highlight-tip {:y    (:max p-year)
+                                                                                                  :name (:pname p-year)}))))
                                               :x       #(-> % common/->clj :x x-f)
                                               :y       #(-> % common/->clj :y y-f)}
                                              view-voronoi-lines?
