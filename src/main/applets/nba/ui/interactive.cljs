@@ -17,7 +17,7 @@
    :initial-state (fn [_] {:player-years   (prim/get-initial-state common/PlayerYears nil)
                            :desired-labels (prim/get-initial-state common/DesiredLabels nil)})
    }
-  (let [take-interval! (sw/take-intervals-hof ["render up to voronoi" "render of voronoi"])
+  (let [take-interval! (sw/take-intervals-hof ["render up to voronoi" "render of voronoi" "render after voronoi"])
         player-years-items (:items player-years)
         desired-labels-items (:items desired-labels)
         highlight-series (-> this prim/get-state :highlight-series)
@@ -65,7 +65,8 @@
                                                                                         :name (:pname p-year)})))
                                       :x       #(-> % common/->clj :x x-f)
                                       :y       #(-> % common/->clj :y y-f)}))
-               (take-interval! 120)))))
+               (take-interval! 120))
+             (take-interval! 1))))
 
 (def interactive-components-ui (prim/factory InteractiveComponents))
 
