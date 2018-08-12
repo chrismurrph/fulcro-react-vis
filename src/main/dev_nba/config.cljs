@@ -7,7 +7,7 @@
   (let [{:keys [start-f app-config]}
         {:start-f    nba/init
          :app-config {:stage               :improved
-                      :file-size           :medium-random
+                      :file-size           :large
                       :chk-dups?           false
                       :view-voronoi-lines? false}}]
     [start-f app-config]))
