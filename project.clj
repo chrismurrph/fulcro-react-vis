@@ -11,9 +11,12 @@
   :test-paths ["src/test"]
   :clean-targets ^{:protect false} ["target" "resources/public/js" "resources/private"]
 
-  :profiles {:cljs       {:source-paths ["src/main" "src/test"]
-                          :dependencies [[thheller/shadow-cljs "2.2.18"]
-                                         [binaryage/devtools "0.9.8"]
-                                         [fulcrologic/fulcro-inspect "2.2.1"]
-                                         ]
-                          }})
+  :profiles {:cljs {:source-paths ["src/main" "src/test"]
+                    :dependencies [[thheller/shadow-cljs "2.2.18"]
+                                   [binaryage/devtools "0.9.8"]
+                                   [fulcrologic/fulcro-inspect "2.2.1"]
+                                   ]}
+             :dev  {:source-paths    ["dev/server"]
+                    :dependencies    [[org.clojure/tools.namespace "0.3.0-alpha4"]
+                                      [org.clojure/tools.nrepl "0.2.13"]]
+                    :repl-options    {:init-ns user}}})
