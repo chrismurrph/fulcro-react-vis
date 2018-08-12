@@ -6,8 +6,9 @@
 (defn get-start-info! []
   (let [{:keys [start-f app-config]}
         {:start-f    nba/init
-         :app-config {:stage               :improved
-                      :file-size           :large
-                      :chk-dups?           false
-                      :view-voronoi-lines? false}}]
+         :app-config {:stage                  :improved
+                      :file-size              :large
+                      :chk-dups?              false
+                      :view-voronoi-lines?    false
+                      :incl-better-than-line? false}}]
     [start-f app-config]))

@@ -28,7 +28,7 @@
 (defsc PlayerYears [_ _]
   {:ident         (fn [] [:player-years/by-id :singleton])
    :query         [{:items (mprim/get-many PlayerYear)}
-                   :ui/file-size :ui/chk-dups? :ui/view-voronoi-lines?]
+                   :ui/file-size :ui/chk-dups? :ui/view-voronoi-lines? :ui/incl-better-than-line?]
    :initial-state {:items []}})
 
 (defsc DesiredLabels [_ _]
@@ -54,9 +54,15 @@
    {:x 65, :y 337}, {:x 66, :y 339}, {:x 67, :y 343}, {:x 68, :y 348}, {:x 69, :y 350}, {:x 70, :y 356}, {:x 71, :y 361}, {:x 72, :y 369},
    {:x 73, :y 378}, {:x 74, :y 382}, {:x 75, :y 385}, {:x 76, :y 388}, {:x 77, :y 392}, {:x 78, :y 402}])
 
-(def better-than-curry-line (map (fn [{:keys [x y]}]
-                                   {:x x :y (+ y 20) :pname "Stephen Curry" :year 2016})
-                                 only-stephen-curry-games))
+(defn extreme [f d]
+  (->> d (map :y) (apply f)))
+
+(def better-than-curry-line {:pname "Stephen Curry"
+                             :year  2016
+                             :min   (extreme min only-stephen-curry-games)
+                             :max   (extreme max only-stephen-curry-games)
+                             :games (map (fn [{:keys [x y]}] {:x x :y (+ y 20)})
+                                         only-stephen-curry-games)})
 (def simplification 3)
 ;;
 ;; The data doesn't have a player-year so we create it now. Also the games need to be
@@ -97,17 +103,19 @@
     :large (large-data/data-rows!)))
 
 (defn load-nba-games! [comp
-                       {:keys [file-size stage chk-dups? view-voronoi-lines?] :as opts}
+                       {:keys [file-size stage chk-dups? view-voronoi-lines? incl-better-than-line?] :as opts}
                        desired-labels
                        reconciler]
   (let [player-year-mods (identities-and-stages-hof desired-labels opts)
-        d {:items        (->> (cond-> (data-rows! file-size)
-                                      (= :improved stage) (conj better-than-curry-line))
-                              (map-indexed player-year-mods)
-                              vec)
-           :ui/file-size file-size
-           :ui/chk-dups? chk-dups?
-           :ui/view-voronoi-lines? view-voronoi-lines?
+        d {:items                     (->> (cond-> (data-rows! file-size)
+                                                   (and (= :improved stage) incl-better-than-line?)
+                                                   (conj better-than-curry-line))
+                                           (map-indexed player-year-mods)
+                                           vec)
+           :ui/file-size              file-size
+           :ui/chk-dups?              chk-dups?
+           :ui/view-voronoi-lines?    view-voronoi-lines?
+           :ui/incl-better-than-line? incl-better-than-line?
            }]
     (prim/merge-component! reconciler comp d)))
 

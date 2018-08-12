@@ -19,7 +19,7 @@
 (defn clean-row [in]
   (let [row (str/split in #",")
         [player pname year] row
-        extreme (fn [d f] (->> d (map :y) (apply f)))
+        extreme (fn [f d] (->> d (map :y) (apply f)))
         cleaned-data (->> row
                           (drop 3)
                           (map-indexed (fn [idx val]
@@ -30,6 +30,6 @@
     {:player player
      :pname  pname
      :year   year
-     :min    (extreme cleaned-data min)
-     :max    (extreme cleaned-data max)
+     :min    (extreme min cleaned-data)
+     :max    (extreme max cleaned-data)
      :games  cleaned-data}))
