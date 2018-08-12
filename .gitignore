@@ -1,0 +1,13 @@
+.idea
+*.iml
+.shadow-cljs
+resources/public/js
+resources/public/images
+resources/public/css/fonts
+resources/public/data-tidy.csv
+favicon.ico
+target
+out
+.lein-repl-history
+.lein-failures
+src/main/applets/nba/data/large.cljs

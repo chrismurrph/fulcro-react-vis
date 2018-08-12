@@ -1,0 +1,16 @@
+{:lein           {:profile "cljs"}
+ :builds         {:main {:target           :browser
+                         :output-dir       "resources/public/js/main"
+                         :asset-path       "/js/main"
+
+                         :modules          {:app {:entries [dev-nba.core]}}
+
+                         :devtools         {:http-root          "resources/public"
+                                            :http-resource-root "resources/public"
+                                            ; Using the figwheel port!
+                                            :http-port          3449
+                                            ;No need as done from index.html
+                                            ;:after-load app.frontend/start
+                                            :preloads [devtools.preload
+                                                       fulcro.inspect.preload
+                                                       general.user]}}}}
