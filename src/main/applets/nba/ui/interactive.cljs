@@ -5,7 +5,6 @@
             [fulcro.client.dom :as dom]
             [applets.nba.vis :as vis]
             [applets.nba.constants :as constants]
-            [general.dev :as dev]
             [general.stopwatch :as sw]))
 
 (def debounced-upd-state (common/debounced-upd-state-hof constants/hovering-nba-chart-interval))
@@ -17,8 +16,8 @@
    :initial-state (fn [_] {:player-years   (prim/get-initial-state common/PlayerYears nil)
                            :desired-labels (prim/get-initial-state common/DesiredLabels nil)})
    }
-  (let [take-interval! (sw/take-intervals-hof ["render up to voronoi" "render of voronoi" "render after voronoi"])
-        player-years-items (:items player-years)
+  (let [take-interval! (sw/take-intervals-hof ["UP TO Voronoi" "OF Voronoi" "AFTER Voronoi"])
+        {view-voronoi-lines? :ui/view-voronoi-lines? player-years-items :items} player-years
         desired-labels-items (:items desired-labels)
         highlight-series (-> this prim/get-state :highlight-series)
         highlight-tip (-> this prim/get-state :highlight-tip)
@@ -51,21 +50,21 @@
                (when highlight-tip (vis/hint (clj->js {:value {:y (:y highlight-tip) :x constants/number-of-games}
                                                        :align {:horizontal "right"}})
                                              (str (:name highlight-tip) " " (:y highlight-tip))))
-               (take-interval! 0)
-               (vis/voronoi (clj->js {:extent  [[0 max-y]
-                                                [width (- height (:bottom margin))]]
-                                      :nodes   player-years-items
-                                      ; Uncomment to see voronoi lines
-                                      ;:polygonStyle #js {:stroke "rgba(0, 0, 0, .2)"}
-                                      :onHover (fn [js]
-                                                 (let [p-year (common/->clj js)]
-                                                   (debounced-upd-state this
-                                                                        :highlight-series (:games p-year)
-                                                                        :highlight-tip {:y    (:max p-year)
-                                                                                        :name (:pname p-year)})))
-                                      :x       #(-> % common/->clj :x x-f)
-                                      :y       #(-> % common/->clj :y y-f)}))
-               (take-interval! 120))
+               (take-interval! 10)
+               (vis/voronoi (clj->js (cond-> {:extent  [[0 max-y]
+                                                        [width (- height (:bottom margin))]]
+                                              :nodes   player-years-items
+                                              :onHover (fn [js]
+                                                         (let [p-year (common/->clj js)]
+                                                           (debounced-upd-state this
+                                                                                :highlight-series (:games p-year)
+                                                                                :highlight-tip {:y    (:max p-year)
+                                                                                                :name (:pname p-year)})))
+                                              :x       #(-> % common/->clj :x x-f)
+                                              :y       #(-> % common/->clj :y y-f)}
+                                             view-voronoi-lines?
+                                             (assoc :polygonStyle {:stroke "rgba(0, 0, 0, .2)"}))))
+               (take-interval! 80))
              (take-interval! 1))))
 
 (def interactive-components-ui (prim/factory InteractiveComponents))

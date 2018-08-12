@@ -20,10 +20,12 @@
         iter (atom 0)
         elapsed-f (start)]
     (fn [limit]
-      (let [elapsed (elapsed-f)
-            diff (- elapsed @last-elapsed)]
-        (when (> diff limit)
-          (dev/log (nth interval-names @iter) diff "msecs"))
-        (reset! last-elapsed elapsed)
-        (swap! iter inc))
+      (if (>= @iter (count interval-names))
+        (dev/warn "Too many calls (" (inc @iter) ") to take-intervals-hof inner fn for" interval-names)
+        (let [elapsed (elapsed-f)
+              diff (- elapsed @last-elapsed)]
+          (when (> diff limit)
+            (dev/log (nth interval-names @iter) diff "msecs"))
+          (reset! last-elapsed elapsed)
+          (swap! iter inc)))
       nil)))

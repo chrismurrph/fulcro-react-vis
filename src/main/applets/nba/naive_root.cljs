@@ -1,6 +1,5 @@
 (ns applets.nba.naive-root
   (:require [fulcro.client.primitives :as prim :refer [defsc defui]]
-            [fulcro.client.dom :as dom]
             [applets.nba.ui.naive :as ui]
             [general.my-prim :as mprim]))
 

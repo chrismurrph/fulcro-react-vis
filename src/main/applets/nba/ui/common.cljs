@@ -28,7 +28,7 @@
 (defsc PlayerYears [_ _]
   {:ident         (fn [] [:player-years/by-id :singleton])
    :query         [{:items (mprim/get-many PlayerYear)}
-                   :ui/file-size :ui/chk-dups?]
+                   :ui/file-size :ui/chk-dups? :ui/view-voronoi-lines?]
    :initial-state {:items []}})
 
 (defsc DesiredLabels [_ _]
@@ -64,16 +64,15 @@
 ;; Also the simplification of the lines for stage :improved is handled here.
 ;; The work for :nyt stage can be done always as :naive doesn't use those keys.
 ;;
-(defn identities-and-stages-hof [desired-labels improved?]
+(defn identities-and-stages-hof [desired-labels {:keys [stage]}]
   (dev/assert-warn (set? desired-labels))
-  (dev/log "improved?" improved?)
   (fn [idx {:keys [pname year games max] :as player-year}]
     (dev/assert-warn (map? player-year) "Not a map:" player-year)
     (dev/assert-warn max "No max" player-year)
     (let [player-year-id (make-player-year-id pname year)
           label {:pname pname :year year}
           make-simple (fn [games n]
-                        (if improved?
+                        (if (= :improved stage)
                           (->clj (simplify (clj->js games) n))
                           games))]
       (assoc player-year
@@ -94,17 +93,22 @@
   (case file-size
     :small (small-data/data-rows!)
     :medium (medium-data/data-rows!)
-    :random (random-data/data-rows!)
+    :medium-random (random-data/data-rows!)
     :large (large-data/data-rows!)))
 
-(defn load-nba-games! [comp file-size chk-dups? improved? desired-labels reconciler]
-  (let [player-year-mods (identities-and-stages-hof desired-labels improved?)
+(defn load-nba-games! [comp
+                       {:keys [file-size stage chk-dups? view-voronoi-lines?] :as opts}
+                       desired-labels
+                       reconciler]
+  (let [player-year-mods (identities-and-stages-hof desired-labels opts)
         d {:items        (->> (cond-> (data-rows! file-size)
-                                      improved? (conj better-than-curry-line))
+                                      (= :improved stage) (conj better-than-curry-line))
                               (map-indexed player-year-mods)
                               vec)
            :ui/file-size file-size
-           :ui/chk-dups? chk-dups?}]
+           :ui/chk-dups? chk-dups?
+           :ui/view-voronoi-lines? view-voronoi-lines?
+           }]
     (prim/merge-component! reconciler comp d)))
 
 (defn max-max [player-years]

@@ -10,4 +10,5 @@ target
 out
 .lein-repl-history
 .lein-failures
+.nrepl-port
 src/main/applets/nba/data/large.cljs

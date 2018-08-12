@@ -37,5 +37,4 @@
 
 (def number-of-games 82)
 (def max-number-of-three-pointers 405)
-;; Upped from 40 to about how long the render takes on my machine with all the data (ie. :large)
-(def hovering-nba-chart-interval 100)
+(def hovering-nba-chart-interval 40)
