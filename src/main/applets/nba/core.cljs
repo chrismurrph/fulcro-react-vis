@@ -17,11 +17,12 @@
   (reset! app (fc/new-fulcro-client
                 :started-callback (fn [app]
                                     (let [rec (:reconciler app)]
-                                      (common/load-nba-games! common/PlayerYears
-                                                              opts
-                                                              constants/desired-labels
-                                                              rec)
-                                      (prim/transact! rec `[(ops/fill-desired-labels)])))))
+                                      (js/setTimeout #(do (common/load-nba-games! common/PlayerYears
+                                                                                  opts
+                                                                                  constants/desired-labels
+                                                                                  rec)
+                                                          (prim/transact! rec `[(ops/fill-desired-labels)]))
+                                                     50)))))
   (mount (cond
            (= stage :naive) naive-root/NBARoot
            (#{:nyt :improved} stage) non-naive-root/NBARoot

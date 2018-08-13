@@ -15,11 +15,7 @@
                         {:desired-labels (mprim/get-one common/DesiredLabels)}
                         :highlight-series]
    :initial-state      (fn [_] {:player-years   (prim/get-initial-state common/PlayerYears nil)
-                                :desired-labels (prim/get-initial-state common/DesiredLabels nil)})
-   ; I hoped this would get us to see loading but it didn't
-   ;:componentWillMount (fn [] (common/load-data Chart (-> this prim/props :ui/small-data?) (prim/get-reconciler this)))
-   ;:componentDidMount (fn [] (prim/transact! this `[(ops/fill-desired-labels)]))
-   }
+                                :desired-labels (prim/get-initial-state common/DesiredLabels nil)})}
   (let [take-interval! (sw/take-intervals-hof ["render of naive"])
         chk-dup! (when (:ui/chk-dups? player-years)
                    (dev/chk-dup-hof))
@@ -52,8 +48,6 @@
                      (vis/x-axis #js {:style      #js {:ticks common/font-style}
                                       :tickFormat common/tick-format}))
         (take-interval! 100))
-      (do
-        (dev/log "Never see loading..." player-years-items desired-labels-items)
-        (dom/div "LOADING LOADING LOADING LOADING LOADING LOADING LOADING LOADING LOADING LOADING LOADING LOADING")))))
+      (dom/div "LOADING..."))))
 
 (def chart-ui (prim/factory NaiveChart))

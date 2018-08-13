@@ -19,7 +19,7 @@
   (let [take-interval! (sw/take-intervals-hof ["render of static"])
         player-years-items (:items player-years)
         colour-scale-f (common/colour-scale-hof player-years-items)]
-    (when (seq player-years-items)
+    (if (seq player-years-items)
       (dom/div :.relative
                (dom/div
                  (vis/xy-plot (clj->js (merge constants/layout
@@ -37,6 +37,7 @@
                               (vis/x-axis #js {:style      #js {:ticks common/font-style}
                                                :tickFormat common/tick-format})))
                (interactive/interactive-components-ui interactive-components)
-               (take-interval! 100)))))
+               (take-interval! 100))
+      (dom/div "LOADING..."))))
 
 (def chart-ui (prim/factory StaticChart))
