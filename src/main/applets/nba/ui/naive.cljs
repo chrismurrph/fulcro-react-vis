@@ -48,6 +48,6 @@
                      (vis/x-axis #js {:style      #js {:ticks common/font-style}
                                       :tickFormat common/tick-format}))
         (take-interval! 100))
-      (dom/div "LOADING..."))))
+      (dom/div "Loading..."))))
 
 (def chart-ui (prim/factory NaiveChart))

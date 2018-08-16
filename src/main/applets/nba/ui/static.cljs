@@ -38,6 +38,6 @@
                                                :tickFormat common/tick-format})))
                (interactive/interactive-components-ui interactive-components)
                (take-interval! 100))
-      (dom/div "LOADING..."))))
+      (dom/div "Loading..."))))
 
 (def chart-ui (prim/factory StaticChart))
