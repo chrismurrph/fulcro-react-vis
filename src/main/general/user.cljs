@@ -1,6 +1,7 @@
 (ns general.user
   (:require [general.dev :as dev]
-            [fulcro.client.primitives :as prim]))
+            [fulcro.client.primitives :as prim]
+            [fulcro.client :as fc]))
 
 ;; Start a REPL:
 ;; npx shadow-cljs cljs-repl main
@@ -8,19 +9,23 @@
 ;; (x-1)
 ;; The returned data structure will go to the REPL
 
-;;
-;; Note that this has not been set up. Fulcro Inspect (FI) will probably be all you need.
-;; I've only ever needed this browser REPL to get a textual copy of state, something that
-;; FI can't do. One way to make this ns serviceable would be to delete the
-;; applets.nba.core/app-atom, and instead use this app-atom from applets.nba.core
-;;
-(def app-atom (atom nil))
+(defonce app (atom nil))
+(defonce root-comp (atom nil))
+
+(defn mount [comp]
+  (reset! app (fc/mount @app comp "app")))
 
 (defn get-state []
-  @(prim/app-state (-> app-atom deref :reconciler)))
+  @(prim/app-state (-> app deref :reconciler)))
 
 ;; Should appear in browser. Can be fickle. You might want to re-start the watch process
-(dev/log-off "************************ Pre-loaded ns can use to dump state")
+(dev/log-off "====> Pre-loaded ns where can dump")
+
+#_(defn ^:dev/before-load stop []
+    (js/console.log "stop"))
+
+(defn ^:dev/after-load start []
+  (mount @root-comp))
 
 (defn x-1 []
   (dev/log "Testing x-1")
