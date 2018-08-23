@@ -10,7 +10,6 @@
 ;; The returned data structure will go to the REPL
 
 (defonce app (atom nil))
-(defonce root-comp (atom nil))
 
 (defn mount [comp]
   (reset! app (fc/mount @app comp "app")))
@@ -25,7 +24,7 @@
     (js/console.log "stop"))
 
 (defn ^:dev/after-load start []
-  (mount @root-comp))
+  (mount (prim/app-root (-> app deref :reconciler))))
 
 (defn x-1 []
   (dev/log "Testing x-1")
